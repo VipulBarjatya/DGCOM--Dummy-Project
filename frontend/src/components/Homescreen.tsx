@@ -1,13 +1,29 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col } from "react-bootstrap";
 import Product from "./Product";
-import products from "../product";
+import axios from "axios";
 
-products.map((product) => {
-  console.log("product type:>>>", typeof product);
-});
+export interface IProducts {
+  _id: string;
+  name: string;
+  image: string;
+  rating: number;
+  numReviews: number;
+  price: number;
+}
 
 const Homescreen = () => {
+  const [products, setProducts] = useState<IProducts[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const { data } = await axios.get("/api/products");
+
+      setProducts(data);
+    };
+
+    fetchProducts();
+  }, []);
   return (
     <>
       <h1>Latest Products</h1>
@@ -21,5 +37,4 @@ const Homescreen = () => {
     </>
   );
 };
-
 export default Homescreen;

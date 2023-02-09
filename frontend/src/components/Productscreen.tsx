@@ -1,7 +1,18 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Row, Col, Image, ListGroup, Card, Button } from "react-bootstrap";
-import products from "../product";
+import axios from "axios";
+
+interface IProducts {
+  _id: string;
+  name: string;
+  image: string;
+  rating: number;
+  numReviews: number;
+  description: string;
+  price: number;
+  countInStock: number;
+}
 
 interface Iprops {
   match: {
@@ -12,7 +23,20 @@ interface Iprops {
 }
 
 const Productscreen: React.FC<Iprops> = ({ match }) => {
-  const product: any = products.find((p) => p._id === match.params.id);
+  const [product, setProduct] = useState<IProducts>();
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      const { data } = await axios.get(`/api/products/${match.params.id}`);
+      setProduct(data);
+    };
+    fetchProduct();
+  }, [match.params.id]);
+
+  if (!product) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <>
       <Link className="btn btn-dark my-3" to="/">
@@ -32,7 +56,7 @@ const Productscreen: React.FC<Iprops> = ({ match }) => {
               <h2>{product.name}</h2>
             </ListGroup.Item>
             <ListGroup.Item>Price: ${product.price}</ListGroup.Item>
-            <ListGroup.Item>Description:{product.description}</ListGroup.Item>
+            <ListGroup.Item>Description: {product.description}</ListGroup.Item>
           </ListGroup>
         </Col>
         <Col md={3}>
